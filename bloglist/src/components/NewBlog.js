@@ -1,7 +1,10 @@
 import { React, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../slices/blogSlice'
 
-const NewBlog = ({ handleCreate }) => {
+const NewBlog = ({ blogFormRef }) => {
 	const [newBlog, setNewBlog] = useState({})
+	const dispatch = useDispatch()
 
 	const handleChange = e => {
 		const { name, value } = e.target
@@ -12,6 +15,11 @@ const NewBlog = ({ handleCreate }) => {
 		e.preventDefault()
 		handleCreate(newBlog)
 		setNewBlog({})
+	}
+
+	const handleCreate = async (newBlog) => {
+		blogFormRef.current.toggleVisibility()
+		dispatch(createBlog(newBlog))
 	}
 
 	return (
