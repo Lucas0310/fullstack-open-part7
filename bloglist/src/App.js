@@ -1,21 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 import NewBlog from './components/NewBlog'
 import Togglable from './components/Togglable'
 import Blog from './components/Blog'
 import { useDispatch, useSelector } from 'react-redux'
-import { createNotification } from './slices/notificationSlice'
 import { createBlog, fetchBlogs } from './slices/blogSlice'
+import { fetchLoggedUser, loginUser, logoutUser } from './slices/userSlice'
 
 const App = () => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
-	const [user, setUser] = useState(null)
 	const blogFormRef = useRef()
 	const dispatch = useDispatch()
 	const blogs = useSelector(state => state.blogs)
+	const user = useSelector(state => state.user)
 
 	useEffect(() => {
 		if (!user) return
@@ -24,35 +22,19 @@ const App = () => {
 	}, [user, dispatch])
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('user')
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
-			blogService.setToken(user.token)
-			setUser(user)
-		}
-	}, [])
+		dispatch(fetchLoggedUser())
+	}, [dispatch])
 
 
 	const handleLogin = async (event) => {
 		event.preventDefault()
-		try {
-			const user = await loginService.login({
-				username, password,
-			})
-			setUser(user)
-			blogService.setToken(user.token)
-			setUsername('')
-			setPassword('')
-			window.localStorage.setItem('user', JSON.stringify(user))
-		}
-		catch (error) {
-			dispatch(createNotification('invalid username or password'))
-		}
+		dispatch(loginUser(username, password))
+		setUsername('')
+		setPassword('')
 	}
 
-	const logout = () => {
-		window.localStorage.clear()
-		setUser(null)
+	const handleLogout = () => {
+		dispatch(logoutUser())
 	}
 
 
@@ -65,7 +47,7 @@ const App = () => {
 		<>
 			<div>
 				{user.username} logged in
-				<button onClick={logout}>logout</button>
+				<button onClick={handleLogout}>logout</button>
 			</div>
 			<br></br>
 			<div>
