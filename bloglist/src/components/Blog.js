@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import propTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { deleteBlog, likeBlog } from '../slices/blogSlice'
 
-const Blog = ({ blog, addLikeToBlog, removeBlog }) => {
+const Blog = ({ blog }) => {
+	const dispatch = useDispatch()
 	const [isVisible, setIsVisible] = useState(false)
 	const blogStyle = {
 		paddingTop: 10,
@@ -9,6 +12,11 @@ const Blog = ({ blog, addLikeToBlog, removeBlog }) => {
 		border: 'solid',
 		borderWidth: 1,
 		marginBottom: 5
+	}
+
+	const addLikeToBlog = () => {
+		const updatedBlog = { ...blog, likes: blog.likes + 1 }
+		dispatch(likeBlog(updatedBlog))
 	}
 
 	const showWhenVisible = { display: isVisible ? '' : 'none' }
@@ -21,7 +29,7 @@ const Blog = ({ blog, addLikeToBlog, removeBlog }) => {
 
 	const handleRemove = () => {
 		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-			removeBlog(blog.id)
+			dispatch(deleteBlog(blog.id))
 		}
 	}
 
@@ -35,7 +43,7 @@ const Blog = ({ blog, addLikeToBlog, removeBlog }) => {
 				</div>
 				<div>
 					{`likes ${blog.likes}`}
-					<button id='likeButton' onClick={() => addLikeToBlog(blog)}>like</button>
+					<button id='likeButton' onClick={() => addLikeToBlog()}>like</button>
 				</div>
 				<div>
 					{blog.author}
@@ -48,8 +56,6 @@ const Blog = ({ blog, addLikeToBlog, removeBlog }) => {
 
 Blog.propTypes = {
 	blog: propTypes.object.isRequired,
-	addLikeToBlog: propTypes.func.isRequired,
-	removeBlog: propTypes.func.isRequired
 }
 
 export default Blog

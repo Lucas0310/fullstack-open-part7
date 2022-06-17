@@ -5,24 +5,23 @@ import Notification from './components/Notification'
 import NewBlog from './components/NewBlog'
 import Togglable from './components/Togglable'
 import Blog from './components/Blog'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { createNotification } from './slices/notificationSlice'
+import { createBlog, fetchBlogs } from './slices/blogSlice'
 
 const App = () => {
-	const [blogs, setBlogs] = useState([])
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
 	const blogFormRef = useRef()
 	const dispatch = useDispatch()
+	const blogs = useSelector(state => state.blogs)
 
 	useEffect(() => {
 		if (!user) return
 
-		blogService.getAll().then(blogs =>
-			setBlogs(blogs)
-		)
-	}, [user])
+		dispatch(fetchBlogs())
+	}, [user, dispatch])
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('user')
@@ -59,33 +58,7 @@ const App = () => {
 
 	const handleCreate = async (newBlog) => {
 		blogFormRef.current.toggleVisibility()
-		try {
-			const addedBlog = await blogService.create(newBlog)
-			setBlogs(blogs.concat(addedBlog))
-		} catch (e) {
-			console.log(e)
-		}
-	}
-
-	const addLikeToBlog = async (blog) => {
-		const updatedBlog = { ...blog, likes: blog.likes + 1 }
-		const response = await blogService.update(updatedBlog)
-
-		const blogIndex = blogs.findIndex(x => x.id === blog.id)
-		const blogsCopy = [...blogs]
-		blogsCopy[blogIndex] = response
-
-		setBlogs(blogsCopy.sort((a, b) => a.likes > b.likes ? -1 : 1))
-	}
-
-	const removeBlog = async (id) => {
-		try {
-			await blogService.remove(id)
-			const blogsCopy = blogs.filter(x => x.id !== id)
-			setBlogs(blogsCopy)
-		} catch (e) {
-			window.alert(e)
-		}
+		dispatch(createBlog(newBlog))
 	}
 
 	const blogForm = () => (
@@ -104,7 +77,7 @@ const App = () => {
 			<ul>
 				{blogs.map((blog, i) =>
 					<div key={i}>
-						<Blog blog={blog} addLikeToBlog={addLikeToBlog} removeBlog={removeBlog}></Blog>
+						<Blog blog={blog}></Blog>
 					</div>
 				)}
 			</ul>
@@ -140,7 +113,7 @@ const App = () => {
 	return (
 		<div>
 			<h1>{user === null ? 'login to application' : 'blogs'}</h1>
-			<Notification/>
+			<Notification />
 			{user === null ? loginForm() : blogForm()}
 		</div>
 	)
