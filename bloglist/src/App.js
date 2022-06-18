@@ -7,6 +7,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import { Route, Routes } from 'react-router-dom'
 import UsersInfo from './components/UsersInfo'
+import UserBlogs from './components/UserBlogs'
 
 const App = () => {
 	const dispatch = useDispatch()
@@ -28,6 +29,7 @@ const App = () => {
 			<Notification />
 			<Routes>
 				<Route path='/users' element={<UsersInfo />}></Route>
+				<Route path='/users/:id' element={<UserBlogs />}></Route>
 				<Route path='/' element={user === null ? <LoginForm /> : <BlogForm />}></Route>
 			</Routes>
 		</div>
