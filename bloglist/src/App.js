@@ -5,6 +5,8 @@ import { fetchBlogs } from './slices/blogSlice'
 import { fetchLoggedUser } from './slices/userSlice'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import { Route, Routes } from 'react-router-dom'
+import UsersInfo from './components/UsersInfo'
 
 const App = () => {
 	const dispatch = useDispatch()
@@ -24,7 +26,10 @@ const App = () => {
 		<div>
 			<h1>{user === null ? 'login to application' : 'blogs'}</h1>
 			<Notification />
-			{user === null ? <LoginForm /> : <BlogForm />}
+			<Routes>
+				<Route path='/users' element={<UsersInfo />}></Route>
+				<Route path='/' element={user === null ? <LoginForm /> : <BlogForm />}></Route>
+			</Routes>
 		</div>
 	)
 }
