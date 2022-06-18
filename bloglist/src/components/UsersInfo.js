@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 const UsersInfo = () => {
 	const blogs = useSelector(state => state.blogs)
 	const authorsAndBlogsCreatedAmount = blogs.reduce((acc, value) => {
-		const author = value.author
+		const author = value.user.name
 		const authorExist = acc.find(x => x.author === author)
 
 		if (authorExist) {
