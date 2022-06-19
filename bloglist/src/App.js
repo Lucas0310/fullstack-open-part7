@@ -9,6 +9,7 @@ import { Route, Routes } from 'react-router-dom'
 import UsersInfo from './components/UsersInfo'
 import UserBlogs from './components/UserBlogs'
 import BlogDetail from './components/BlogDetail'
+import Navbar from './components/Navbar'
 
 const App = () => {
 	const dispatch = useDispatch()
@@ -26,6 +27,7 @@ const App = () => {
 
 	return (
 		<div>
+			{user !== null && <Navbar />}
 			<h1>{user === null ? 'login to application' : 'blogs'}</h1>
 			<Notification />
 			<Routes>
